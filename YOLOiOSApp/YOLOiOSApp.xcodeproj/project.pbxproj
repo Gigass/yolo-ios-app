@@ -20,6 +20,16 @@
 		734B444A2D42F7CF00D2CA6A /* OBBModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44452D42F7CF00D2CA6A /* OBBModels */; };
 		734B444B2D42F7CF00D2CA6A /* PoseModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44462D42F7CF00D2CA6A /* PoseModels */; };
 		734B444C2D42F7CF00D2CA6A /* SegmentModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44472D42F7CF00D2CA6A /* SegmentModels */; };
+		7383A5822DFBB63B00441B7F /* ExternalYOLOView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7383A5812DFBB63B00441B7F /* ExternalYOLOView.swift */; };
+		7383A5832DFBB63B00441B7F /* ExternalSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7383A57F2DFBB63B00441B7F /* ExternalSceneDelegate.swift */; };
+		7383A5842DFBB63B00441B7F /* ExternalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7383A5802DFBB63B00441B7F /* ExternalViewController.swift */; };
+		7383A5862DFBB9F900441B7F /* ExternalDisplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7383A5852DFBB9F900441B7F /* ExternalDisplayManager.swift */; };
+		7383A5882DFBC14D00441B7F /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7383A5872DFBC14D00441B7F /* SceneDelegate.swift */; };
+		7383A58A2DFBD06100441B7F /* OBBModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44452D42F7CF00D2CA6A /* OBBModels */; };
+		7383A58B2DFBD06B00441B7F /* DetectModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44432D42F7CF00D2CA6A /* DetectModels */; };
+		7383A58C2DFBD06B00441B7F /* ClassifyModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44442D42F7CF00D2CA6A /* ClassifyModels */; };
+		7383A58D2DFBD06B00441B7F /* SegmentModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44472D42F7CF00D2CA6A /* SegmentModels */; };
+		7383A58E2DFBD06B00441B7F /* PoseModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44462D42F7CF00D2CA6A /* PoseModels */; };
 		73D95D162D45DA510050E640 /* ModelDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D95D152D45DA510050E640 /* ModelDownloadManager.swift */; };
 		73D95D192D45DAA50050E640 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 73D95D182D45DAA50050E640 /* ZIPFoundation */; };
 		73D95D1B2D45DB800050E640 /* RemoteModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D95D1A2D45DB800050E640 /* RemoteModels.swift */; };
@@ -39,6 +49,11 @@
 		734B44452D42F7CF00D2CA6A /* OBBModels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = OBBModels; sourceTree = "<group>"; };
 		734B44462D42F7CF00D2CA6A /* PoseModels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PoseModels; sourceTree = "<group>"; };
 		734B44472D42F7CF00D2CA6A /* SegmentModels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SegmentModels; sourceTree = "<group>"; };
+		7383A57F2DFBB63B00441B7F /* ExternalSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalSceneDelegate.swift; sourceTree = "<group>"; };
+		7383A5802DFBB63B00441B7F /* ExternalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalViewController.swift; sourceTree = "<group>"; };
+		7383A5812DFBB63B00441B7F /* ExternalYOLOView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalYOLOView.swift; sourceTree = "<group>"; };
+		7383A5852DFBB9F900441B7F /* ExternalDisplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalDisplayManager.swift; sourceTree = "<group>"; };
+		7383A5872DFBC14D00441B7F /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		73D95D152D45DA510050E640 /* ModelDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelDownloadManager.swift; sourceTree = "<group>"; };
 		73D95D1A2D45DB800050E640 /* RemoteModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteModels.swift; sourceTree = "<group>"; };
 		7BCB411721C3096100BFC4D0 /* YOLOiOSApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YOLOiOSApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -60,6 +75,11 @@
 		636EFC9B21E62DD300DE43BC /* YOLOiOSApp */ = {
 			isa = PBXGroup;
 			children = (
+				7383A5872DFBC14D00441B7F /* SceneDelegate.swift */,
+				7383A5852DFBB9F900441B7F /* ExternalDisplayManager.swift */,
+				7383A57F2DFBB63B00441B7F /* ExternalSceneDelegate.swift */,
+				7383A5802DFBB63B00441B7F /* ExternalViewController.swift */,
+				7383A5812DFBB63B00441B7F /* ExternalYOLOView.swift */,
 				636EFCA721E62DD300DE43BC /* AppDelegate.swift */,
 				636EFC9C21E62DD300DE43BC /* ViewController.swift */,
 				73D95D152D45DA510050E640 /* ModelDownloadManager.swift */,
@@ -200,8 +220,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7383A58B2DFBD06B00441B7F /* DetectModels in Sources */,
+				7383A58C2DFBD06B00441B7F /* ClassifyModels in Sources */,
+				7383A58D2DFBD06B00441B7F /* SegmentModels in Sources */,
+				7383A58E2DFBD06B00441B7F /* PoseModels in Sources */,
+				7383A58A2DFBD06100441B7F /* OBBModels in Sources */,
 				73D95D162D45DA510050E640 /* ModelDownloadManager.swift in Sources */,
 				73D95D1B2D45DB800050E640 /* RemoteModels.swift in Sources */,
+				7383A5882DFBC14D00441B7F /* SceneDelegate.swift in Sources */,
+				7383A5822DFBB63B00441B7F /* ExternalYOLOView.swift in Sources */,
+				7383A5862DFBB9F900441B7F /* ExternalDisplayManager.swift in Sources */,
+				7383A5832DFBB63B00441B7F /* ExternalSceneDelegate.swift in Sources */,
+				7383A5842DFBB63B00441B7F /* ExternalViewController.swift in Sources */,
 				636EFCB321E62DD300DE43BC /* AppDelegate.swift in Sources */,
 				636EFCAA21E62DD300DE43BC /* ViewController.swift in Sources */,
 			);
@@ -334,8 +364,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3MR4P6CL3X;
 				INFOPLIST_FILE = YOLOiOSApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Ultralytics YOLO";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -344,7 +374,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.5.9;
+				MARKETING_VERSION = 8.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ultralytics.iDetection;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -362,8 +392,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
-				DEVELOPMENT_TEAM = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3MR4P6CL3X;
 				INFOPLIST_FILE = YOLOiOSApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Ultralytics YOLO";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
@@ -372,7 +402,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 8.5.9;
+				MARKETING_VERSION = 8.6.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.ultralytics.iDetection;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";

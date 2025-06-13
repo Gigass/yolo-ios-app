@@ -20,20 +20,28 @@ class BoundingBoxView {
 
   /// The layer that displays the label and confidence score for the detected object.
   let textLayer: CATextLayer
+  
+  /// Reference to the parent view for dynamic sizing
+  private weak var parentView: UIView?
 
   /// Initializes a new BoundingBoxView with configured shape and text layers.
   init() {
     shapeLayer = CAShapeLayer()
     shapeLayer.fillColor = UIColor.clear.cgColor  // No fill to only show the bounding outline
-    shapeLayer.lineWidth = 4  // Set the stroke line width
+    shapeLayer.lineWidth = 4  // Default line width, will be scaled
     shapeLayer.isHidden = true  // Initially hidden; shown when a detection occurs
 
     textLayer = CATextLayer()
     textLayer.isHidden = true  // Initially hidden; shown with label when a detection occurs
     textLayer.contentsScale = UIScreen.main.scale  // Ensure the text is sharp on retina displays
-    textLayer.fontSize = 14  // Set font size for the label text
+    textLayer.fontSize = 14  // Default font size, will be scaled
     textLayer.font = UIFont(name: "Avenir", size: textLayer.fontSize)  // Use Avenir font for labels
     textLayer.alignmentMode = .center  // Center-align the text within the layer
+  }
+  
+  /// Sets the parent view for dynamic scaling calculations
+  func setParentView(_ view: UIView) {
+    parentView = view
   }
 
   /// Adds the bounding box and text layers to a specified parent layer.
@@ -52,25 +60,62 @@ class BoundingBoxView {
   func show(frame: CGRect, label: String, color: UIColor, alpha: CGFloat) {
     CATransaction.setDisableActions(true)  // Disable implicit animations
 
-    let path = UIBezierPath(roundedRect: frame, cornerRadius: 6.0)  // Rounded rectangle for the bounding box
+    // Calculate dynamic scaling based on screen/view size
+    let scaleFactor = calculateScaleFactor()
+    let dynamicLineWidth = 4.0 * scaleFactor
+    let dynamicCornerRadius = 6.0 * scaleFactor
+    let dynamicFontSize = 14.0 * scaleFactor
+    
+    // Update line width
+    shapeLayer.lineWidth = dynamicLineWidth
+    
+    let path = UIBezierPath(roundedRect: frame, cornerRadius: dynamicCornerRadius)
     shapeLayer.path = path.cgPath
     shapeLayer.strokeColor = color.withAlphaComponent(alpha).cgColor  // Apply color and alpha to the stroke
     shapeLayer.isHidden = false  // Make the shape layer visible
 
+    // Update font size and font
+    textLayer.fontSize = dynamicFontSize
+    textLayer.font = UIFont(name: "Avenir", size: dynamicFontSize)
     textLayer.string = label  // Set the label text
     textLayer.backgroundColor = color.withAlphaComponent(alpha).cgColor  // Apply color and alpha to the background
     textLayer.isHidden = false  // Make the text layer visible
     textLayer.foregroundColor = UIColor.white.withAlphaComponent(alpha).cgColor  // Set text color
 
-    // Calculate the text size and position based on the label content
-    let attributes = [NSAttributedString.Key.font: textLayer.font as Any]
+    // Calculate the text size and position based on the label content with dynamic sizing
+    let font = UIFont(name: "Avenir", size: dynamicFontSize) ?? UIFont.systemFont(ofSize: dynamicFontSize)
+    let attributes = [NSAttributedString.Key.font: font]
     let textRect = label.boundingRect(
-      with: CGSize(width: 400, height: 100),
+      with: CGSize(width: 400 * scaleFactor, height: 100 * scaleFactor),
       options: .truncatesLastVisibleLine,
       attributes: attributes, context: nil)
-    let textSize = CGSize(width: textRect.width + 12, height: textRect.height)  // Add padding to the text size
-    let textOrigin = CGPoint(x: frame.origin.x - 2, y: frame.origin.y - textSize.height - 2)  // Position above the bounding box
-    textLayer.frame = CGRect(origin: textOrigin, size: textSize)  // Set the text layer frame
+    let padding = 12.0 * scaleFactor
+    let textSize = CGSize(width: textRect.width + padding, height: textRect.height)
+    let offset = 2.0 * scaleFactor
+    let textOrigin = CGPoint(x: frame.origin.x - offset, y: frame.origin.y - textSize.height - offset)
+    textLayer.frame = CGRect(origin: textOrigin, size: textSize)
+  }
+  
+  /// Calculates scale factor based on screen size
+  private func calculateScaleFactor() -> CGFloat {
+    guard let parentView = parentView else {
+      // Fallback to screen size if no parent view
+      let screenSize = UIScreen.main.bounds.size
+      let baseSize: CGFloat = 375.0 // iPhone reference size
+      let rawScale = max(screenSize.width, screenSize.height) / baseSize
+      // Use square root to reduce scaling for line width
+      return max(1.0, min(sqrt(rawScale), 3.0))
+    }
+    
+    let viewSize = parentView.bounds.size
+    let baseSize: CGFloat = 375.0 // iPhone reference size
+    let rawScale = max(viewSize.width, viewSize.height) / baseSize
+    
+    // Use square root to reduce scaling for line width and text
+    let scaleFactor = sqrt(rawScale)
+    
+    // Clamp scale factor between reasonable bounds
+    return max(1.0, min(scaleFactor, 3.0))
   }
 
   /// Hides the bounding box and text layers.

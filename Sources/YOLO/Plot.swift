@@ -645,6 +645,16 @@ class OBBRenderer {
 
   private var layerPool: [OBBShapeLayerBundle] = []
   private var usedLayerCount = 0
+  
+  func resetLayerPool() {
+    // Hide and remove all pooled layers
+    for bundle in layerPool {
+      bundle.shapeLayer.removeFromSuperlayer()
+      bundle.textLayer.removeFromSuperlayer()
+    }
+    layerPool.removeAll()
+    usedLayerCount = 0
+  }
 
   private func getLayerBundle(for parentLayer: CALayer) -> OBBShapeLayerBundle {
     if usedLayerCount < layerPool.count {

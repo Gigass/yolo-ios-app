@@ -152,6 +152,19 @@ public class YOLOView: UIView, VideoCaptureDelegate {
     start(position: .back)
     setupOverlayLayer()
   }
+  
+  /// Initialize YOLOView without a model (camera only)
+  public override init(frame: CGRect) {
+    self.videoCapture = VideoCapture()
+    self.task = .detect  // Default task
+    super.init(frame: frame)
+    setUpOrientationChangeNotification()
+    self.setUpBoundingBoxViews()
+    self.setupUI()
+    self.videoCapture.delegate = self
+    start(position: .back)
+    setupOverlayLayer()
+  }
 
   required init?(coder: NSCoder) {
     self.videoCapture = VideoCapture()
@@ -175,6 +188,10 @@ public class YOLOView: UIView, VideoCaptureDelegate {
     task: YOLOTask,
     completion: ((Result<Void, Error>) -> Void)? = nil
   ) {
+    print("🔍 YOLOView.setModel called with:")
+    print("  - modelPathOrName: \(modelPathOrName)")
+    print("  - task: \(task)")
+    
     activityIndicator.startAnimating()
     boundingBoxViews.forEach { box in
       box.hide()
@@ -193,6 +210,8 @@ public class YOLOView: UIView, VideoCaptureDelegate {
       || lowercasedPath.hasSuffix(".mlmodelc")
     {
       let possibleURL = URL(fileURLWithPath: modelPathOrName)
+      print("  - Checking file path: \(possibleURL.path)")
+      print("  - File exists: \(fileManager.fileExists(atPath: possibleURL.path))")
       if fileManager.fileExists(atPath: possibleURL.path) {
         modelURL = possibleURL
       }
@@ -209,6 +228,19 @@ public class YOLOView: UIView, VideoCaptureDelegate {
 
     guard let unwrappedModelURL = modelURL else {
       let error = PredictorError.modelFileNotFound
+      print("🔴 Model file not found!")
+      print("  - Searched for: \(modelPathOrName)")
+      print("  - Bundle main path: \(Bundle.main.bundlePath)")
+      print("  - Bundle resources: \(Bundle.main.resourcePath ?? "nil")")
+      
+      // If modelPathOrName is empty, it means no model was provided yet
+      if modelPathOrName.isEmpty {
+        print("  - Empty model path provided, waiting for model from main app")
+        self.activityIndicator.stopAnimating()
+        completion?(.failure(error))
+        return
+      }
+      
       fatalError(error.localizedDescription)
     }
 
@@ -326,7 +358,9 @@ public class YOLOView: UIView, VideoCaptureDelegate {
   func setUpBoundingBoxViews() {
     // Ensure all bounding box views are initialized up to the maximum allowed.
     while boundingBoxViews.count < maxBoundingBoxViews {
-      boundingBoxViews.append(BoundingBoxView())
+      let boundingBoxView = BoundingBoxView()
+      boundingBoxView.setParentView(self) // Set parent view for dynamic scaling
+      boundingBoxViews.append(boundingBoxView)
     }
 
   }
@@ -354,6 +388,11 @@ public class YOLOView: UIView, VideoCaptureDelegate {
       self.overlayLayer.frame = CGRect(
         x: 0, y: -margin, width: self.bounds.width, height: offSet)
     }
+    
+    // Update frames of sublayers if they exist
+    maskLayer?.frame = self.overlayLayer.bounds
+    poseLayer?.frame = self.overlayLayer.bounds
+    obbLayer?.frame = self.overlayLayer.bounds
   }
 
   func setupMaskLayerIfNeeded() {
@@ -394,11 +433,19 @@ public class YOLOView: UIView, VideoCaptureDelegate {
   public func resetLayers() {
     removeAllSubLayers(parentLayer: maskLayer)
     removeAllSubLayers(parentLayer: poseLayer)
+    removeAllSubLayers(parentLayer: obbLayer)
     removeAllSubLayers(parentLayer: overlayLayer)
 
+    maskLayer?.removeFromSuperlayer()
+    poseLayer?.removeFromSuperlayer()
+    obbLayer?.removeFromSuperlayer()
+    
     maskLayer = nil
     poseLayer = nil
-    obbLayer?.isHidden = true
+    obbLayer = nil
+    
+    // Reset OBBRenderer's layer pool
+    obbRenderer.resetLayerPool()
   }
 
   func setupSublayers() {
@@ -985,7 +1032,7 @@ public class YOLOView: UIView, VideoCaptureDelegate {
     //      frameSizeCaptured = false
   }
 
-  @objc func sliderChanged(_ sender: Any) {
+  @objc public func sliderChanged(_ sender: Any) {
 
     if sender as? UISlider === sliderNumItems {
       if let detector = videoCapture.predictor as? ObjectDetector {
@@ -1052,7 +1099,7 @@ public class YOLOView: UIView, VideoCaptureDelegate {
     pauseButton.isEnabled = false
   }
 
-  @objc func switchCameraTapped() {
+  @objc public func switchCameraTapped() {
 
     self.videoCapture.captureSession.beginConfiguration()
     let currentInput = self.videoCapture.captureSession.inputs.first as? AVCaptureDeviceInput

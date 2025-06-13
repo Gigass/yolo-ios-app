@@ -179,7 +179,7 @@ class VideoCapture: NSObject, @unchecked Sendable {
 
   private func predictOnFrame(sampleBuffer: CMSampleBuffer) {
     guard let predictor = predictor else {
-      print("predictor is nil")
+      // No predictor set, just show camera feed without inference
       return
     }
     if currentBuffer == nil, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
