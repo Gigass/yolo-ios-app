@@ -32,6 +32,22 @@ This is the Ultralytics YOLO iOS app repository containing:
 - Build and run apps: `Cmd+R` (requires physical iOS device for camera features)
 - Run specific test file: Select test file in navigator and `Cmd+U`
 - Clean build folder: `Shift+Cmd+K`
+- Resolve package dependencies: `xcodebuild -resolvePackageDependencies`
+
+### CI Build Commands
+```bash
+# Build and test with code coverage (from CI workflow)
+xcodebuild \
+  -scheme YOLO \
+  -sdk iphonesimulator \
+  -derivedDataPath Build/ \
+  -destination "platform=iOS Simulator,name=iPhone 14" \
+  -enableCodeCoverage YES \
+  clean build test
+
+# Generate code coverage report
+xcrun llvm-cov export -format="lcov" -instr-profile "$PROFDATA_PATH" "$BINARY_PATH" > info.lcov
+```
 
 ### Test Setup
 - Most tests skip model validation by default (`SKIP_MODEL_TESTS = true`)
@@ -45,21 +61,28 @@ This is the Ultralytics YOLO iOS app repository containing:
 
 ### Core Components
 - **YOLO Class** (Sources/YOLO/YOLO.swift): Main interface supporting multiple input types (UIImage, CIImage, CGImage, file paths, URLs)
-- **Predictor Protocol**: Base interface implemented by task-specific predictors
+  - Implements `@dynamicCallable` for simple inference API: `let results = model(image)`
+  - Manages model loading, task detection, and predictor instantiation
+- **Predictor Protocol** (Sources/YOLO/Predictor.swift): Base interface implemented by task-specific predictors
+  - Defines common methods: `predict(image:)`, `predict(pixelBuffer:)`, `nms()`
 - **Task-Specific Predictors**: ObjectDetector, Segmenter, Classifier, PoseEstimater, ObbDetector
+  - Each handles its own postprocessing and NMS implementation
 - **YOLOCamera/YOLOView**: SwiftUI and UIKit components for real-time camera inference
+  - YOLOCamera (SwiftUI): High-level camera view with built-in model management
+  - YOLOView (UIKit): Low-level camera view with customizable API
 
 ### Supported Tasks
-- Object Detection (.detect)
-- Image Segmentation (.segment) 
-- Classification (.classify)
-- Pose Estimation (.pose)
-- Oriented Bounding Box Detection (.obb)
+- Object Detection (.detect) - Bounding boxes with class labels
+- Image Segmentation (.segment) - Pixel-level masks with bounding boxes
+- Classification (.classify) - Image-level class predictions
+- Pose Estimation (.pose) - Keypoint detection for human pose
+- Oriented Bounding Box Detection (.obb) - Rotated bounding boxes
 
 ### Model Integration
 - Supports CoreML models (.mlmodel, .mlpackage, .mlmodelc)
 - Models loaded from app bundle or file paths
 - Automatic model type detection and appropriate predictor selection
+- Vision framework integration for efficient image preprocessing
 
 ## Development Guidelines
 
@@ -153,7 +176,25 @@ dependencies: [
 - Apple Studio Display (5K) recommended for testing
 - Lightning to HDMI or USB-C display adapters
 
-📄 **See EXTERNAL_DISPLAY_NOTES.md for detailed implementation notes and troubleshooting**
+## Code Organization
+
+### Project Structure Pattern
+- Each app target has its own directory with `.xcodeproj` file
+- Models organized by task type in dedicated directories (DetectModels/, SegmentModels/, etc.)
+- Test files with `.backup` extension contain model-dependent tests
+- Each test directory includes a README.md with setup instructions
+
+### Code Style and Formatting
+- Swift code follows standard iOS conventions
+- No explicit SwiftFormat or SwiftLint configuration files (uses Xcode defaults)
+- GitHub Actions uses Ultralytics formatter for consistency
+- Test naming convention: `test<FeatureName>_<Scenario>_<ExpectedResult>()`
+
+### Model File Management
+- Model files (.mlpackage) contain CoreML models with weights
+- Models are included in repository for easy app testing
+- Remote model downloading supported via ModelDownloadManager
+- Model files organized by task type: Detect, Segment, Classify, Pose, OBB
 
 ## License
 

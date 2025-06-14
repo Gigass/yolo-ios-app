@@ -287,6 +287,11 @@ class ViewController: UIViewController, YOLOViewDelegate {
       // Always load model list for UI
       currentModels = makeModelEntries(for: currentTask)
       modelTableView.reloadData()
+      
+      // Show model table view if models are available
+      if !currentModels.isEmpty {
+        modelTableView.isHidden = false
+      }
     }
 
     setupTableView()
@@ -396,11 +401,8 @@ class ViewController: UIViewController, YOLOViewDelegate {
         .filter { $0.pathExtension == "mlmodel" || $0.pathExtension == "mlpackage" }
         .map { $0.lastPathComponent }
 
-      if folderName == "DetectModels" {
-        return reorderDetectionModels(modelFiles)
-      } else {
-        return modelFiles.sorted()
-      }
+      // Apply n,s,m ordering to all tasks
+      return reorderYOLOModels(modelFiles)
 
     } catch {
       print("Error reading contents of folder \(folderName): \(error)")
@@ -408,8 +410,8 @@ class ViewController: UIViewController, YOLOViewDelegate {
     }
   }
 
-  private func reorderDetectionModels(_ fileNames: [String]) -> [String] {
-    let officialOrder: [Character: Int] = ["n": 0, "m": 1, "s": 2, "l": 3, "x": 4]
+  private func reorderYOLOModels(_ fileNames: [String]) -> [String] {
+    let officialOrder: [Character: Int] = ["n": 0, "s": 1, "m": 2, "l": 3, "x": 4]
 
     var customModels: [String] = []
     var officialModels: [String] = []
@@ -477,18 +479,19 @@ class ViewController: UIViewController, YOLOViewDelegate {
       )
     }
 
-    let remoteList = remoteModelsInfo[taskName] ?? []
-    let remoteEntries = remoteList.map { (modelName, url) -> ModelEntry in
-      ModelEntry(
-        displayName: modelName,
-        identifier: modelName,
-        isLocalBundle: false,
-        isRemote: true,
-        remoteURL: url
-      )
-    }
+    // リモートモデルは追加しない（バンドルされたモデルのみを表示）
+    // let remoteList = remoteModelsInfo[taskName] ?? []
+    // let remoteEntries = remoteList.map { (modelName, url) -> ModelEntry in
+    //   ModelEntry(
+    //     displayName: modelName,
+    //     identifier: modelName,
+    //     isLocalBundle: false,
+    //     isRemote: true,
+    //     remoteURL: url
+    //   )
+    // }
 
-    return localEntries + remoteEntries
+    return localEntries  // リモートモデルを除外
   }
 
   private var currentLoadingEntry: ModelEntry?
