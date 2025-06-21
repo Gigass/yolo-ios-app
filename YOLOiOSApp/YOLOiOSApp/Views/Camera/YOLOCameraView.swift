@@ -10,7 +10,18 @@ struct YOLOCameraView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> YOLOView {
         // Create YOLOView with initial model and task
-        let modelPath = viewModel.currentModel?.identifier ?? "yolo11n"
+        // Get default model path if no model is selected
+        let defaultPath: String
+        if let detectModelsURL = Bundle.main.url(forResource: "DetectModels", withExtension: nil),
+           let yolo11nURL = detectModelsURL.appendingPathComponent("yolo11n.mlpackage") as URL?,
+           FileManager.default.fileExists(atPath: yolo11nURL.path) {
+            defaultPath = yolo11nURL.path
+        } else {
+            // Fallback to just the name, though this will likely fail
+            defaultPath = "yolo11n"
+        }
+        
+        let modelPath = viewModel.currentModel?.identifier ?? defaultPath
         
         // Note: YOLOView requires a model path in init, even if the model doesn't exist
         // It will crash if model is not found - this needs to be fixed in YOLO package

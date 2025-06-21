@@ -269,16 +269,20 @@ class YOLOViewModel: ObservableObject {
         let folderName = "\(taskName)Models"
         
         // Scan for local models in the bundle
-        let localModels = getModelFiles(in: folderName)
-        for modelPath in localModels {
-            let modelName = URL(fileURLWithPath: modelPath).deletingPathExtension().lastPathComponent
-            entries.append(ModelEntry(
-                identifier: modelName,  // Use just the model name, YOLOView will find it
-                displayName: modelName,
-                task: taskName,
-                isRemote: false,
-                isLocalBundle: true
-            ))
+        if let folderURL = Bundle.main.url(forResource: folderName, withExtension: nil) {
+            let localModels = getModelFiles(in: folderName)
+            for modelFileName in localModels {
+                let modelName = URL(fileURLWithPath: modelFileName).deletingPathExtension().lastPathComponent
+                let modelPath = folderURL.appendingPathComponent(modelFileName).path
+                print("Found model: \(modelName) at path: \(modelPath)")
+                entries.append(ModelEntry(
+                    identifier: modelPath,  // Use full path for YOLOView
+                    displayName: modelName,
+                    task: taskName,
+                    isRemote: false,
+                    isLocalBundle: true
+                ))
+            }
         }
         
         // Add remote models
@@ -301,11 +305,11 @@ class YOLOViewModel: ObservableObject {
                 options: [.skipsHiddenFiles]
             )
             
-            // Filter for .mlpackage files and return relative paths
+            // Filter for .mlpackage files and return just the filenames
             return fileURLs.compactMap { url in
                 if url.pathExtension == "mlpackage" {
-                    // Return path relative to bundle resources
-                    return "\(folderName)/\(url.lastPathComponent)"
+                    // Return just the filename, not the full path
+                    return url.lastPathComponent
                 }
                 return nil
             }
