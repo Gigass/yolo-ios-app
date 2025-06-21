@@ -273,7 +273,7 @@ class YOLOViewModel: ObservableObject {
         for modelPath in localModels {
             let modelName = URL(fileURLWithPath: modelPath).deletingPathExtension().lastPathComponent
             entries.append(ModelEntry(
-                identifier: modelPath,  // Use full path as identifier
+                identifier: modelName,  // Use just the model name, YOLOView will find it
                 displayName: modelName,
                 task: taskName,
                 isRemote: false,

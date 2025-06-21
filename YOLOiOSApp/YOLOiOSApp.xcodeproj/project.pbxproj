@@ -14,11 +14,6 @@
 		63CF37202514455300E2DEA1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6323C44F22186177008AE681 /* Main.storyboard */; };
 		63CF37212514455300E2DEA1 /* ultralytics_yolo_logotype.png in Resources */ = {isa = PBXBuildFile; fileRef = 6323C45122186177008AE681 /* ultralytics_yolo_logotype.png */; };
 		73220ED32D373C2E00A94B92 /* YOLO in Frameworks */ = {isa = PBXBuildFile; productRef = 73220ED22D373C2E00A94B92 /* YOLO */; };
-		734B44482D42F7CF00D2CA6A /* DetectModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44432D42F7CF00D2CA6A /* DetectModels */; };
-		734B44492D42F7CF00D2CA6A /* ClassifyModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44442D42F7CF00D2CA6A /* ClassifyModels */; };
-		734B444A2D42F7CF00D2CA6A /* OBBModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44452D42F7CF00D2CA6A /* OBBModels */; };
-		734B444B2D42F7CF00D2CA6A /* PoseModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44462D42F7CF00D2CA6A /* PoseModels */; };
-		734B444C2D42F7CF00D2CA6A /* SegmentModels in Resources */ = {isa = PBXBuildFile; fileRef = 734B44472D42F7CF00D2CA6A /* SegmentModels */; };
 		73A992102E029C7A0051C61F /* StatusMetricBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9920D2E029C7A0051C61F /* StatusMetricBar.swift */; };
 		73A992112E029C7A0051C61F /* RightSideToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9920B2E029C7A0051C61F /* RightSideToolBar.swift */; };
 		73A992122E029C7A0051C61F /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A992072E029C7A0051C61F /* Colors.swift */; };
@@ -29,6 +24,11 @@
 		73A992182E029C7A0051C61F /* ParameterEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9920A2E029C7A0051C61F /* ParameterEditView.swift */; };
 		73A9921A2E05132F0051C61F /* ModelDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A992192E05132F0051C61F /* ModelDropdownView.swift */; };
 		73A9923F2E069A120051C61F /* YOLOApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73A9923E2E069A120051C61F /* YOLOApp.swift */; };
+		73A992502E06AD6A0051C61F /* DetectModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44432D42F7CF00D2CA6A /* DetectModels */; };
+		73A992512E06AD6A0051C61F /* ClassifyModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44442D42F7CF00D2CA6A /* ClassifyModels */; };
+		73A992522E06AD6A0051C61F /* SegmentModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44472D42F7CF00D2CA6A /* SegmentModels */; };
+		73A992532E06AD6A0051C61F /* PoseModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44462D42F7CF00D2CA6A /* PoseModels */; };
+		73A992542E06AD6A0051C61F /* OBBModels in Sources */ = {isa = PBXBuildFile; fileRef = 734B44452D42F7CF00D2CA6A /* OBBModels */; };
 		73D95D162D45DA510050E640 /* ModelDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D95D152D45DA510050E640 /* ModelDownloadManager.swift */; };
 		73D95D192D45DAA50050E640 /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 73D95D182D45DAA50050E640 /* ZIPFoundation */; };
 		73D95D1B2D45DB800050E640 /* RemoteModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73D95D1A2D45DB800050E640 /* RemoteModels.swift */; };
@@ -206,11 +206,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				734B44482D42F7CF00D2CA6A /* DetectModels in Resources */,
-				734B44492D42F7CF00D2CA6A /* ClassifyModels in Resources */,
-				734B444A2D42F7CF00D2CA6A /* OBBModels in Resources */,
-				734B444B2D42F7CF00D2CA6A /* PoseModels in Resources */,
-				734B444C2D42F7CF00D2CA6A /* SegmentModels in Resources */,
 				636EFCB921E62E3900DE43BC /* Assets.xcassets in Resources */,
 				63CF37202514455300E2DEA1 /* Main.storyboard in Resources */,
 				63CF37212514455300E2DEA1 /* ultralytics_yolo_logotype.png in Resources */,
@@ -247,6 +242,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				73A992502E06AD6A0051C61F /* DetectModels in Sources */,
+				73A992512E06AD6A0051C61F /* ClassifyModels in Sources */,
+				73A992522E06AD6A0051C61F /* SegmentModels in Sources */,
+				73A992532E06AD6A0051C61F /* PoseModels in Sources */,
+				73A992542E06AD6A0051C61F /* OBBModels in Sources */,
 				73D95D162D45DA510050E640 /* ModelDownloadManager.swift in Sources */,
 				73D95D1B2D45DB800050E640 /* RemoteModels.swift in Sources */,
 				636EFCAA21E62DD300DE43BC /* ViewController.swift in Sources */,

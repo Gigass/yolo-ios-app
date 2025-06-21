@@ -27,6 +27,45 @@ struct YOLOApp: App {
         // Store device UUID
         let uuid = UIDevice.current.identifierForVendor?.uuidString ?? "unknown"
         UserDefaults.standard.set(uuid, forKey: "device_uuid")
+        
+        // Debug: Check bundle resources
+        debugBundleResources()
+    }
+    
+    private func debugBundleResources() {
+        print("=== Debugging Bundle Resources ===")
+        
+        // Check for individual models
+        let testModels = ["yolo11n", "yolo11s", "yolo11n-seg", "yolo11n-cls", "yolo11n-pose", "yolo11n-obb"]
+        for model in testModels {
+            if let url = Bundle.main.url(forResource: model, withExtension: "mlpackage") {
+                print("✅ Found \(model) at: \(url.path)")
+            } else {
+                print("❌ \(model).mlpackage not found")
+            }
+        }
+        
+        // Check for model folders
+        let folders = ["DetectModels", "SegmentModels", "ClassifyModels", "PoseModels", "OBBModels"]
+        for folder in folders {
+            if let url = Bundle.main.url(forResource: folder, withExtension: nil) {
+                print("✅ Found folder \(folder) at: \(url.path)")
+                
+                // List contents
+                do {
+                    let contents = try FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)
+                    for file in contents {
+                        print("   - \(file.lastPathComponent)")
+                    }
+                } catch {
+                    print("   ❌ Error reading folder: \(error)")
+                }
+            } else {
+                print("❌ Folder \(folder) not found")
+            }
+        }
+        
+        print("=================================")
     }
     
     var body: some Scene {
