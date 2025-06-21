@@ -14,9 +14,9 @@
 
 import UIKit
 
-/// The main application delegate, handling global app behavior and configuration.
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+/// Legacy application delegate - no longer used with SwiftUI app lifecycle
+// @UIApplicationMain - Commented out to use SwiftUI App instead
+class LegacyAppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
 
   /// Called when the app finishes launching, used here to set global app settings.

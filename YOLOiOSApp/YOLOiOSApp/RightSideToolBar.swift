@@ -26,7 +26,7 @@ class RightSideToolBar: UIView {
     }
     
     private var buttons: [UIButton] = []
-    private var activeTool: Tool?
+    private(set) var activeTool: Tool?
     private var currentZoomLevel: Float = 1.0
     
     var onToolSelected: ((Tool) -> Void)?

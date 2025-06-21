@@ -1170,6 +1170,13 @@ extension ViewController {
   }
   
   private func handleParameterTool(_ tool: RightSideToolBar.Tool) {
+    // Check if this is the currently active tool being toggled off
+    if rightSideToolBar.activeTool == nil {
+      // Tool was deactivated, hide parameter editor
+      parameterEditView.hide()
+      return
+    }
+    
     switch tool {
     case .itemsMax:
       let current = Int(currentThresholds["itemsMax"] ?? 15)

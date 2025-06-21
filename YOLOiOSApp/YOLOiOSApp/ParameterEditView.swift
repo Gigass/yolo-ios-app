@@ -46,6 +46,9 @@ class ParameterEditView: UIView {
     private let toastLabel = UILabel()
     private let slider = UISlider()
     private var hideTimer: Timer?
+    private let tickStackView = UIStackView()
+    private let labelStackView = UIStackView()
+    private let sliderContainer = UIView()
     
     var onValueChange: ((Parameter) -> Void)?
     private var currentParameter: Parameter?
@@ -76,17 +79,31 @@ class ParameterEditView: UIView {
         toastView.addSubview(toastLabel)
         addSubview(toastView)
         
+        // Slider container with background
+        sliderContainer.backgroundColor = UIColor.black.withAlphaComponent(0.2)
+        sliderContainer.layer.cornerRadius = 12
+        sliderContainer.alpha = 0
+        
         // Slider
         slider.minimumTrackTintColor = .ultralyticsLime
-        slider.maximumTrackTintColor = .ultralyticsSurfaceDark
-        slider.thumbTintColor = .ultralyticsLime
-        slider.alpha = 0
+        slider.maximumTrackTintColor = UIColor.gray.withAlphaComponent(0.4)
         slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
         
         // Custom thumb
-        let thumbView = UIView(frame: CGRect(x: 0, y: 0, width: 4, height: 20))
-        thumbView.backgroundColor = .ultralyticsLime
-        thumbView.layer.cornerRadius = 2
+        let thumbSize: CGFloat = 28
+        let thumbView = UIView(frame: CGRect(x: 0, y: 0, width: thumbSize, height: thumbSize))
+        thumbView.backgroundColor = .white
+        thumbView.layer.cornerRadius = thumbSize / 2
+        thumbView.layer.shadowColor = UIColor.black.cgColor
+        thumbView.layer.shadowOpacity = 0.15
+        thumbView.layer.shadowOffset = CGSize(width: 0, height: 2)
+        thumbView.layer.shadowRadius = 4
+        
+        // Add center dot
+        let centerDot = UIView(frame: CGRect(x: (thumbSize - 12) / 2, y: (thumbSize - 12) / 2, width: 12, height: 12))
+        centerDot.backgroundColor = .ultralyticsLime
+        centerDot.layer.cornerRadius = 6
+        thumbView.addSubview(centerDot)
         
         UIGraphicsBeginImageContextWithOptions(thumbView.bounds.size, false, 0)
         if let context = UIGraphicsGetCurrentContext() {
@@ -98,10 +115,25 @@ class ParameterEditView: UIView {
             slider.setThumbImage(thumbImage, for: .highlighted)
         }
         
-        addSubview(slider)
+        // Tick marks
+        tickStackView.axis = .horizontal
+        tickStackView.distribution = .equalSpacing
+        tickStackView.alignment = .center
+        tickStackView.alpha = 0
+        
+        // Labels
+        labelStackView.axis = .horizontal
+        labelStackView.distribution = .equalSpacing
+        labelStackView.alignment = .center
+        labelStackView.alpha = 0
+        
+        sliderContainer.addSubview(slider)
+        addSubview(sliderContainer)
+        addSubview(tickStackView)
+        addSubview(labelStackView)
         
         // Layout
-        [toastView, toastLabel, slider].forEach {
+        [toastView, toastLabel, slider, sliderContainer, tickStackView, labelStackView].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
         
@@ -116,11 +148,29 @@ class ParameterEditView: UIView {
             toastLabel.trailingAnchor.constraint(equalTo: toastView.trailingAnchor, constant: -12),
             toastLabel.centerYAnchor.constraint(equalTo: toastView.centerYAnchor),
             
-            // Slider
-            slider.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
-            slider.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            slider.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -20),
-            slider.heightAnchor.constraint(equalToConstant: 44)
+            // Slider container
+            sliderContainer.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
+            sliderContainer.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
+            sliderContainer.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -60),
+            sliderContainer.heightAnchor.constraint(equalToConstant: 60),
+            
+            // Slider inside container
+            slider.leadingAnchor.constraint(equalTo: sliderContainer.leadingAnchor, constant: 16),
+            slider.trailingAnchor.constraint(equalTo: sliderContainer.trailingAnchor, constant: -16),
+            slider.centerYAnchor.constraint(equalTo: sliderContainer.centerYAnchor),
+            slider.heightAnchor.constraint(equalToConstant: 44),
+            
+            // Tick marks
+            tickStackView.leadingAnchor.constraint(equalTo: slider.leadingAnchor),
+            tickStackView.trailingAnchor.constraint(equalTo: slider.trailingAnchor),
+            tickStackView.centerYAnchor.constraint(equalTo: slider.centerYAnchor),
+            tickStackView.heightAnchor.constraint(equalToConstant: 12),
+            
+            // Labels
+            labelStackView.leadingAnchor.constraint(equalTo: slider.leadingAnchor),
+            labelStackView.trailingAnchor.constraint(equalTo: slider.trailingAnchor),
+            labelStackView.topAnchor.constraint(equalTo: sliderContainer.bottomAnchor, constant: 8),
+            labelStackView.heightAnchor.constraint(equalToConstant: 20)
         ])
     }
     
@@ -135,16 +185,59 @@ class ParameterEditView: UIView {
         slider.maximumValue = parameter.range.upperBound
         slider.value = parameter.value
         
+        // Setup tick marks and labels
+        setupTickMarks(for: parameter)
+        
         // Update toast
         updateToastLabel()
         
         // Show with animation
         UIView.animate(withDuration: 0.15) {
             self.toastView.alpha = 1
-            self.slider.alpha = 1
+            self.sliderContainer.alpha = 1
+            self.tickStackView.alpha = 1
+            self.labelStackView.alpha = 1
         }
         
-        resetHideTimer()
+        // Don't auto-hide - wait for user action
+        hideTimer?.invalidate()
+    }
+    
+    private func setupTickMarks(for parameter: Parameter) {
+        // Clear existing marks
+        tickStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        labelStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        let tickCount = 5
+        let labels: [String]
+        
+        switch parameter {
+        case .confidence, .iou:
+            labels = ["0", "25", "50", "75", "100"]
+        case .itemsMax:
+            labels = ["1", "8", "15", "23", "30"]
+        case .lineThickness:
+            labels = ["0.5", "1.0", "1.5", "2.0", "3.0"]
+        }
+        
+        // Create tick marks and labels
+        for i in 0..<tickCount {
+            // Tick mark
+            let tickView = UIView()
+            tickView.backgroundColor = UIColor.white.withAlphaComponent(0.6)
+            tickView.translatesAutoresizingMaskIntoConstraints = false
+            tickView.widthAnchor.constraint(equalToConstant: 2).isActive = true
+            tickView.heightAnchor.constraint(equalToConstant: 12).isActive = true
+            tickStackView.addArrangedSubview(tickView)
+            
+            // Label
+            let label = UILabel()
+            label.text = labels[i]
+            label.font = .systemFont(ofSize: 12, weight: .medium)
+            label.textColor = UIColor.white.withAlphaComponent(0.7)
+            label.textAlignment = .center
+            labelStackView.addArrangedSubview(label)
+        }
     }
     
     @objc private func sliderValueChanged() {
@@ -192,10 +285,7 @@ class ParameterEditView: UIView {
     }
     
     private func resetHideTimer() {
-        hideTimer?.invalidate()
-        hideTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-            self.hide()
-        }
+        // No longer auto-hide - user must tap button or outside to dismiss
     }
     
     func hide() {
@@ -203,10 +293,22 @@ class ParameterEditView: UIView {
         
         UIView.animate(withDuration: 0.3) {
             self.toastView.alpha = 0
-            self.slider.alpha = 0
+            self.sliderContainer.alpha = 0
+            self.tickStackView.alpha = 0
+            self.labelStackView.alpha = 0
         } completion: { _ in
             // Disable interaction when hidden
             self.isUserInteractionEnabled = false
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
+        
+        // If touch is outside the slider container, hide the parameter editor
+        if !sliderContainer.frame.contains(location) {
+            hide()
         }
     }
 }
