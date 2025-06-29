@@ -1919,7 +1919,7 @@ extension ViewController {
     
     // Update UI to show we're in screenshot mode
     statusMetricBar.updateMetrics(fps: 0, latency: 0)
-    statusMetricBar.updateModel(name: "Screenshot Mode", size: "")
+    // Keep the current model name displayed
     
     // Add exit button to navigation bar
     let exitButton = UIBarButtonItem(

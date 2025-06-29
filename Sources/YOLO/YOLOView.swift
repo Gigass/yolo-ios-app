@@ -1568,8 +1568,8 @@ extension YOLOView {
           self.onPredict(result: result)
         }
         
-        // Show static FPS and inference time
-        self.labelFPS.text = "Screenshot Mode - \(String(format: "%.1f ms", result.speed * 1000))"
+        // Show inference time for screenshot
+        self.labelFPS.text = String(format: "Photo - %.1f ms", result.speed * 1000)
       }
     }
   }
