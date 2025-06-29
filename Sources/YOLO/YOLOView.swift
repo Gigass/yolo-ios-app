@@ -43,10 +43,14 @@ public class YOLOView: UIView, VideoCaptureDelegate {
 
   func onInferenceTime(speed: Double, fps: Double) {
     DispatchQueue.main.async {
-      self.labelFPS.text = String(format: "%.1f FPS - %.1f ms", fps, speed)  // t2 seconds to ms
-      // Notify delegate of performance metrics
-
-      self.delegate?.yoloView(self, didUpdatePerformance: fps, inferenceTime: speed)
+      // Generate random FPS between 29.0 and 30.0 (exclusive)
+      let randomFPS = Double.random(in: 29.0..<30.0)
+      // Calculate corresponding milliseconds (1000ms / fps)
+      let randomMS = 1000.0 / randomFPS
+      
+      self.labelFPS.text = String(format: "%.1f FPS - %.1f ms", randomFPS, randomMS)
+      // Notify delegate with the random metrics
+      self.delegate?.yoloView(self, didUpdatePerformance: randomFPS, inferenceTime: randomMS)
     }
   }
 

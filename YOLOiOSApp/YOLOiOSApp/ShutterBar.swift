@@ -7,7 +7,6 @@ class ShutterBar: UIView {
     private let thumbnailButton = UIButton(type: .custom)
     private let shutterButton = UIButton(type: .custom)
     private let flipCameraButton = UIButton(type: .custom)
-    private let photoLibraryButton = UIButton(type: .custom)
     
     // Constraints for orientation
     private var heightConstraint: NSLayoutConstraint?
@@ -19,7 +18,6 @@ class ShutterBar: UIView {
     var onShutterTap: (() -> Void)?
     var onShutterLongPress: (() -> Void)?
     var onFlipCamera: (() -> Void)?
-    var onPhotoLibrary: (() -> Void)?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -62,6 +60,10 @@ class ShutterBar: UIView {
         thumbnailButton.layer.borderWidth = 0
         thumbnailButton.clipsToBounds = true
         thumbnailButton.contentMode = .scaleAspectFill
+        // Set photo library icon as default
+        thumbnailButton.setImage(UIImage(systemName: "photo.on.rectangle"), for: .normal)
+        thumbnailButton.tintColor = .white
+        thumbnailButton.imageView?.contentMode = .scaleAspectFit
         thumbnailButton.addTarget(self, action: #selector(thumbnailTapped), for: .touchUpInside)
         
         // Shutter Button - Modern design with gray border and black gap
@@ -106,16 +108,8 @@ class ShutterBar: UIView {
         flipCameraButton.layer.borderWidth = 0
         flipCameraButton.addTarget(self, action: #selector(flipCameraTapped), for: .touchUpInside)
         
-        // Photo Library Button - Modern circular design without border
-        photoLibraryButton.backgroundColor = UIColor.white.withAlphaComponent(0.1)
-        photoLibraryButton.setImage(UIImage(systemName: "photo.on.rectangle"), for: .normal)
-        photoLibraryButton.tintColor = .white
-        photoLibraryButton.layer.cornerRadius = 22
-        photoLibraryButton.layer.borderWidth = 0
-        photoLibraryButton.addTarget(self, action: #selector(photoLibraryTapped), for: .touchUpInside)
-        
         // Layout
-        [thumbnailButton, shutterButton, flipCameraButton, photoLibraryButton].forEach {
+        [thumbnailButton, shutterButton, flipCameraButton].forEach {
             addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
@@ -127,18 +121,13 @@ class ShutterBar: UIView {
             shutterButton.widthAnchor.constraint(equalToConstant: 68),
             shutterButton.heightAnchor.constraint(equalToConstant: 68),
             flipCameraButton.widthAnchor.constraint(equalToConstant: 44),
-            flipCameraButton.heightAnchor.constraint(equalToConstant: 44),
-            photoLibraryButton.widthAnchor.constraint(equalToConstant: 44),
-            photoLibraryButton.heightAnchor.constraint(equalToConstant: 44)
+            flipCameraButton.heightAnchor.constraint(equalToConstant: 44)
         ]
         
         // Portrait constraints - horizontal layout
         portraitConstraints = [
             thumbnailButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 24),
             thumbnailButton.centerYAnchor.constraint(equalTo: centerYAnchor),
-            
-            photoLibraryButton.leadingAnchor.constraint(equalTo: thumbnailButton.trailingAnchor, constant: 12),
-            photoLibraryButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             
             shutterButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             shutterButton.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -150,10 +139,7 @@ class ShutterBar: UIView {
         // Landscape constraints - vertical layout
         landscapeConstraints = [
             thumbnailButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            thumbnailButton.topAnchor.constraint(equalTo: topAnchor, constant: 12),
-            
-            photoLibraryButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-            photoLibraryButton.topAnchor.constraint(equalTo: thumbnailButton.bottomAnchor, constant: 12),
+            thumbnailButton.topAnchor.constraint(equalTo: topAnchor, constant: 24),
             
             shutterButton.centerXAnchor.constraint(equalTo: centerXAnchor),
             shutterButton.centerYAnchor.constraint(equalTo: centerYAnchor),
@@ -213,10 +199,6 @@ class ShutterBar: UIView {
     
     @objc private func flipCameraTapped() {
         onFlipCamera?()
-    }
-    
-    @objc private func photoLibraryTapped() {
-        onPhotoLibrary?()
     }
     
     func updateThumbnail(_ image: UIImage?) {

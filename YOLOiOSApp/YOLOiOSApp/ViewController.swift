@@ -1182,10 +1182,6 @@ extension ViewController {
     }
     
     shutterBar.onThumbnailTap = { [weak self] in
-      self?.showLastCapture()
-    }
-    
-    shutterBar.onPhotoLibrary = { [weak self] in
       self?.showPhotoLibraryPicker()
     }
     
@@ -1457,10 +1453,6 @@ extension ViewController {
     yoloView.switchCameraButton.sendActions(for: .touchUpInside)
   }
   
-  private func showLastCapture() {
-    // Show photo picker
-    showPhotoPicker()
-  }
   
   private func showPhotoLibraryPicker() {
     // Enable screenshot mode temporarily
