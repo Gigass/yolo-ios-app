@@ -1915,8 +1915,8 @@ extension ViewController {
     yoloView.enableScreenshotMode(with: image)
     
     // Update UI to show we're in screenshot mode
-    statusMetricBar.updateFPS(0, latency: 0)
-    statusMetricBar.modelNameLabel.text = "Screenshot Mode"
+    statusMetricBar.updateMetrics(fps: 0, latency: 0)
+    statusMetricBar.updateModel(name: "Screenshot Mode", size: "")
     
     // Add exit button to navigation bar
     let exitButton = UIBarButtonItem(
@@ -1937,6 +1937,9 @@ extension ViewController {
     navigationItem.rightBarButtonItem = nil
     
     // Update status bar
-    statusMetricBar.modelNameLabel.text = currentModelName
+    if let currentModel = currentModels.first(where: { $0.displayName == currentModelName }) {
+      let size = currentModel.displayName.components(separatedBy: "-").last ?? ""
+      statusMetricBar.updateModel(name: currentModelName, size: size.uppercased())
+    }
   }
 }
