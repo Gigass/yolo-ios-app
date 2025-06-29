@@ -296,6 +296,9 @@ class ViewController: UIViewController, YOLOViewDelegate, ModelDropdownViewDeleg
 
 
   private var selectedIndexPath: IndexPath?
+  
+  // Screenshot mode
+  private var isScreenshotModeEnabled = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -1182,6 +1185,10 @@ extension ViewController {
       self?.showLastCapture()
     }
     
+    shutterBar.onPhotoLibrary = { [weak self] in
+      self?.showPhotoLibraryPicker()
+    }
+    
     // Right toolbar actions
     rightSideToolBar.onZoomChanged = { [weak self] zoomLevel in
       self?.handleZoomChange(to: zoomLevel)
@@ -1455,6 +1462,21 @@ extension ViewController {
     showPhotoPicker()
   }
   
+  private func showPhotoLibraryPicker() {
+    // Enable screenshot mode temporarily
+    isScreenshotModeEnabled = true
+    
+    // Show photo picker for screenshot mode
+    var configuration = PHPickerConfiguration()
+    configuration.selectionLimit = 1
+    configuration.filter = .images
+    
+    let picker = PHPickerViewController(configuration: configuration)
+    picker.delegate = self
+    picker.overrideUserInterfaceStyle = .dark // Match app's dark theme
+    present(picker, animated: true)
+  }
+  
   private func showPhotoPicker() {
     var configuration = PHPickerConfiguration()
     configuration.selectionLimit = 1
@@ -1475,7 +1497,12 @@ extension ViewController {
     result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
       if let image = object as? UIImage {
         DispatchQueue.main.async {
-          self?.processSelectedImage(image)
+          // Check if we should enter screenshot mode
+          if self?.isScreenshotModeEnabled == true {
+            self?.enterScreenshotMode(with: image)
+          } else {
+            self?.processSelectedImage(image)
+          }
         }
       }
     }
@@ -1874,5 +1901,42 @@ extension UIImage {
     UIGraphicsEndImageContext()
     
     return normalizedImage ?? self
+  }
+}
+
+// MARK: - Screenshot Mode
+extension ViewController {
+  
+  private func enterScreenshotMode(with image: UIImage) {
+    // Reset flag
+    isScreenshotModeEnabled = false
+    
+    // Enable screenshot mode in YOLOView
+    yoloView.enableScreenshotMode(with: image)
+    
+    // Update UI to show we're in screenshot mode
+    statusMetricBar.updateFPS(0, latency: 0)
+    statusMetricBar.modelNameLabel.text = "Screenshot Mode"
+    
+    // Add exit button to navigation bar
+    let exitButton = UIBarButtonItem(
+      title: "Exit",
+      style: .plain,
+      target: self,
+      action: #selector(exitScreenshotMode)
+    )
+    exitButton.tintColor = .ultralyticsLime
+    navigationItem.rightBarButtonItem = exitButton
+  }
+  
+  @objc private func exitScreenshotMode() {
+    // Disable screenshot mode in YOLOView
+    yoloView.disableScreenshotMode()
+    
+    // Remove exit button
+    navigationItem.rightBarButtonItem = nil
+    
+    // Update status bar
+    statusMetricBar.modelNameLabel.text = currentModelName
   }
 }

@@ -105,6 +105,12 @@ public class YOLOView: UIView, VideoCaptureDelegate {
   private var videoCapture: VideoCapture
   private var busy = false
   private var currentBuffer: CVPixelBuffer?
+  
+  // Screenshot mode properties
+  private var isScreenshotMode = false
+  private var screenshotBackgroundImage: UIImage?
+  private var screenshotImageView: UIImageView?
+  private var screenshotResult: YOLOResult?
   var framesDone = 0
   var t0 = 0.0  // inference start
   var t1 = 0.0  // inference dt
@@ -1458,4 +1464,129 @@ public func processString(_ input: String) -> String {
   }
 
   return output
+}
+
+// MARK: - Screenshot Mode
+
+extension YOLOView {
+  
+  /// Enable screenshot mode with a selected image from photo library
+  public func enableScreenshotMode(with image: UIImage) {
+    isScreenshotMode = true
+    screenshotBackgroundImage = image
+    
+    // Stop video capture
+    videoCapture.stop()
+    
+    // Remove camera preview layer
+    videoCapture.previewLayer?.removeFromSuperlayer()
+    
+    // Create and add image view for background
+    if screenshotImageView == nil {
+      screenshotImageView = UIImageView()
+      screenshotImageView?.contentMode = .scaleAspectFill
+      screenshotImageView?.clipsToBounds = true
+    }
+    
+    screenshotImageView?.image = image
+    screenshotImageView?.frame = bounds
+    
+    if let imageView = screenshotImageView {
+      layer.insertSublayer(imageView.layer, at: 0)
+    }
+    
+    // Run inference on the static image
+    runInferenceOnScreenshotImage()
+  }
+  
+  /// Disable screenshot mode and return to camera mode
+  public func disableScreenshotMode() {
+    isScreenshotMode = false
+    
+    // Remove screenshot image view
+    screenshotImageView?.layer.removeFromSuperlayer()
+    screenshotImageView = nil
+    screenshotBackgroundImage = nil
+    screenshotResult = nil
+    
+    // Clear existing overlays
+    clearAllOverlays()
+    
+    // Restart video capture
+    start(position: .back)
+  }
+  
+  /// Toggle between screenshot and camera modes
+  public func toggleScreenshotMode(with image: UIImage? = nil) {
+    if isScreenshotMode {
+      disableScreenshotMode()
+    } else if let image = image {
+      enableScreenshotMode(with: image)
+    }
+  }
+  
+  /// Check if currently in screenshot mode
+  public var isInScreenshotMode: Bool {
+    return isScreenshotMode
+  }
+  
+  /// Run inference on the current screenshot image
+  private func runInferenceOnScreenshotImage() {
+    guard let image = screenshotBackgroundImage,
+          let predictor = videoCapture.predictor else { return }
+    
+    // Convert UIImage to CIImage
+    guard let ciImage = CIImage(image: image) else { return }
+    
+    // Set busy flag
+    busy = true
+    
+    // Run inference in background
+    DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+      let result = predictor.predictOnImage(image: ciImage)
+      
+      DispatchQueue.main.async {
+        guard let self = self else { return }
+        
+        self.busy = false
+        self.screenshotResult = result
+        
+        // Update UI with results
+        self.onPredict(result: result)
+        
+        // Show static FPS and inference time
+        self.labelFPS.text = "Screenshot Mode"
+      }
+    }
+  }
+  
+  /// Clear all overlay layers
+  private func clearAllOverlays() {
+    // Clear bounding boxes
+    for box in boundingBoxViews {
+      box.hide()
+    }
+    
+    // Clear mask layer
+    maskLayer?.isHidden = true
+    
+    // Clear pose layer
+    if let poseLayer = poseLayer {
+      removeAllSubLayers(parentLayer: poseLayer)
+    }
+    
+    // Clear OBB layer
+    if let obbLayer = obbLayer {
+      obbRenderer.clearAllLayers(on: obbLayer)
+    }
+  }
+  
+  /// Update screenshot with new image
+  public func updateScreenshotImage(_ image: UIImage) {
+    if isScreenshotMode {
+      screenshotBackgroundImage = image
+      screenshotImageView?.image = image
+      runInferenceOnScreenshotImage()
+    }
+  }
 }
