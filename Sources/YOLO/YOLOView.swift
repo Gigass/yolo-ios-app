@@ -1481,6 +1481,9 @@ extension YOLOView {
     // Remove camera preview layer
     videoCapture.previewLayer?.removeFromSuperlayer()
     
+    // Clear any existing overlays first
+    clearAllOverlays()
+    
     // Create and add image view for background
     if screenshotImageView == nil {
       screenshotImageView = UIImageView()
@@ -1494,6 +1497,10 @@ extension YOLOView {
     if let imageView = screenshotImageView {
       layer.insertSublayer(imageView.layer, at: 0)
     }
+    
+    // Make sure overlay layers are visible and on top
+    overlayLayer.frame = bounds
+    bringSubviewToFront(self) // Ensure overlay views are on top
     
     // Run inference on the static image
     runInferenceOnScreenshotImage()
@@ -1551,11 +1558,16 @@ extension YOLOView {
         self.busy = false
         self.screenshotResult = result
         
-        // Update UI with results
-        self.onPredict(result: result)
+        // If we have an annotated image, display it instead of the original
+        if let annotatedImage = result.annotatedImage {
+          self.screenshotImageView?.image = annotatedImage
+        } else {
+          // If no annotated image, show results as overlays
+          self.onPredict(result: result)
+        }
         
         // Show static FPS and inference time
-        self.labelFPS.text = "Screenshot Mode"
+        self.labelFPS.text = "Screenshot Mode - \(String(format: "%.1f ms", result.speed * 1000))"
       }
     }
   }
