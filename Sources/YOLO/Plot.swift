@@ -116,10 +116,17 @@ public func drawYOLODetections(on ciImage: CIImage, result: YOLOResult) -> UIIma
   drawContext.draw(cgImage, in: CGRect(origin: .zero, size: imageSize))
   drawContext.restoreGState()
 
-  // Calculate adaptive drawing sizes
+  // Calculate adaptive drawing sizes based on actual image dimensions
   let imageDiagonal = sqrt(CGFloat(width * width + height * height))
-  let lineWidth = max(3.0, imageDiagonal * 0.008)
-  let fontSize = max(48.0, min(imageDiagonal * 0.1, 120.0))
+  
+  // Use a more conservative scaling for font size and line width
+  // Base the scaling on the shorter dimension to avoid over-scaling
+  let baseDimension = min(CGFloat(width), CGFloat(height))
+  let lineWidth = max(2.0, baseDimension * 0.006)
+  
+  // Scale font size more conservatively, especially for smaller images
+  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
+  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
   
   for box in result.boxes {
     let colorIndex = box.index % ultralyticsColors.count
@@ -395,8 +402,14 @@ public func drawYOLOClassifications(on ciImage: CIImage, result: YOLOResult) -> 
 
   // Calculate line width and font size proportionally to image dimensions
   let imageDiagonal = sqrt(CGFloat(width * width + height * height))
-  let lineWidth = max(3.0, imageDiagonal * 0.005)
-  let fontSize = max(52.0, min(imageDiagonal * 0.11, 140.0))
+  
+  // Use a more conservative scaling for font size and line width
+  let baseDimension = min(CGFloat(width), CGFloat(height))
+  let lineWidth = max(2.0, baseDimension * 0.006)
+  
+  // Scale font size more conservatively, especially for smaller images
+  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
+  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
   let labelMargin = CGFloat(fontSize / 2)
 
   for (i, candidate) in top5.enumerated() {
@@ -780,10 +793,16 @@ func drawOBBsOnCIImage(
     return nil
   }
 
-  // Calculate adaptive drawing sizes
+  // Calculate adaptive drawing sizes based on actual image dimensions
   let imageDiagonal = sqrt(extent.width * extent.width + extent.height * extent.height)
-  let lineWidth = max(3.0, imageDiagonal * 0.008)
-  let fontSize = max(48.0, min(imageDiagonal * 0.1, 120.0))
+  
+  // Use a more conservative scaling for font size and line width
+  let baseDimension = min(extent.width, extent.height)
+  let lineWidth = max(2.0, baseDimension * 0.006)
+  
+  // Scale font size more conservatively, especially for smaller images
+  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
+  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
   let outputSize = targetSize ?? CGSize(width: extent.width, height: extent.height)
 
   UIGraphicsBeginImageContextWithOptions(outputSize, false, 1.0)
@@ -867,14 +886,18 @@ public func drawYOLOPoseWithBoxes(
   // Use dynamic scaling for better visualization across different image sizes
   let imageDiagonal = sqrt(width * width + height * height)
   
+  // Use a more conservative scaling based on shorter dimension
+  let baseDimension = min(width, height)
+  
   // Circle radius: scale between 2% and 4% of diagonal for better visibility
   let circleRadius = max(8.0, min(imageDiagonal * 0.03, 40.0))
   
   // Line width: 50% of circle radius for better visibility
   let lineWidth = max(3.0, circleRadius * 0.5)
   
-  // Font size: scale appropriately with image (larger for better readability)
-  let fontSize = max(48.0, min(imageDiagonal * 0.1, 120.0))
+  // Font size: scale more conservatively, especially for smaller images
+  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
+  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
 
   // 3. Create a single rendering context
   UIGraphicsBeginImageContextWithOptions(renderedSize, false, 0.0)
@@ -991,10 +1014,16 @@ public func drawYOLOSegmentationWithBoxes(
   let height = CGFloat(cgImage.height)
   let renderedSize = CGSize(width: width, height: height)
 
-  // 2. Calculate drawing sizes adaptively
+  // 2. Calculate drawing sizes adaptively based on actual image dimensions
   let imageDiagonal = sqrt(width * width + height * height)
-  let lineWidth = max(3.0, imageDiagonal * 0.008)
-  let fontSize = max(48.0, min(imageDiagonal * 0.1, 120.0))
+  
+  // Use a more conservative scaling for font size and line width
+  let baseDimension = min(width, height)
+  let lineWidth = max(2.0, baseDimension * 0.006)
+  
+  // Scale font size more conservatively, especially for smaller images
+  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
+  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
 
   // 3. Create a single rendering context
   UIGraphicsBeginImageContextWithOptions(renderedSize, false, 0.0)

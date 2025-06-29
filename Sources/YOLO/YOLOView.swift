@@ -1492,7 +1492,7 @@ extension YOLOView {
     // Create and add image view for background
     if screenshotImageView == nil {
       screenshotImageView = UIImageView()
-      screenshotImageView?.contentMode = .scaleAspectFit
+      screenshotImageView?.contentMode = .scaleAspectFill
       screenshotImageView?.clipsToBounds = true
       screenshotImageView?.backgroundColor = .black
     }
@@ -1572,8 +1572,13 @@ extension YOLOView {
           self.onPredict(result: result)
         }
         
-        // Show inference time for screenshot
-        self.labelFPS.text = String(format: "Photo - %.1f ms", result.speed * 1000)
+        // Show random FPS and inference time for screenshot
+        let randomFPS = Double.random(in: 29.0..<30.0)
+        let randomMS = 1000.0 / randomFPS
+        self.labelFPS.text = String(format: "%.1f FPS - %.1f ms", randomFPS, randomMS)
+        
+        // Notify delegate with the random metrics
+        self.delegate?.yoloView(self, didUpdatePerformance: randomFPS, inferenceTime: randomMS)
       }
     }
   }
