@@ -1575,9 +1575,11 @@ extension YOLOView {
       removeAllSubLayers(parentLayer: poseLayer)
     }
     
-    // Clear OBB layer
+    // Clear OBB layer - hide all OBB sublayers
     if let obbLayer = obbLayer {
-      obbRenderer.clearAllLayers(on: obbLayer)
+      for sublayer in obbLayer.sublayers ?? [] {
+        sublayer.isHidden = true
+      }
     }
   }
   
