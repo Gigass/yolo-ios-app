@@ -122,11 +122,12 @@ public func drawYOLODetections(on ciImage: CIImage, result: YOLOResult) -> UIIma
   // Use a more conservative scaling for font size and line width
   // Base the scaling on the shorter dimension to avoid over-scaling
   let baseDimension = min(CGFloat(width), CGFloat(height))
-  let lineWidth = max(2.0, baseDimension * 0.006)
+  let lineWidth = max(2.0, baseDimension * 0.004)
   
-  // Scale font size more conservatively, especially for smaller images
-  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
-  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
+  // Scale font size more conservatively for better readability
+  // For 1000px images, this gives approximately 30-40px font size
+  let fontSizeScale = baseDimension < 1000 ? 0.03 : 0.04
+  let fontSize = max(20.0, min(baseDimension * fontSizeScale, 60.0))
   
   for box in result.boxes {
     let colorIndex = box.index % ultralyticsColors.count
@@ -405,11 +406,12 @@ public func drawYOLOClassifications(on ciImage: CIImage, result: YOLOResult) -> 
   
   // Use a more conservative scaling for font size and line width
   let baseDimension = min(CGFloat(width), CGFloat(height))
-  let lineWidth = max(2.0, baseDimension * 0.006)
+  let lineWidth = max(2.0, baseDimension * 0.004)
   
-  // Scale font size more conservatively, especially for smaller images
-  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
-  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
+  // Scale font size more conservatively for better readability
+  // For 1000px images, this gives approximately 30-40px font size
+  let fontSizeScale = baseDimension < 1000 ? 0.03 : 0.04
+  let fontSize = max(20.0, min(baseDimension * fontSizeScale, 60.0))
   let labelMargin = CGFloat(fontSize / 2)
 
   for (i, candidate) in top5.enumerated() {
@@ -613,7 +615,12 @@ func drawPoseOnCIImage(
   let renderedHeight = cgImage.height
   let renderedSize = CGSize(width: renderedWidth, height: renderedHeight)
 
-  let _radius = max(originalImageSize.width, originalImageSize.height) / 300
+  // Calculate adaptive radius based on rendered image size, not original size
+  let imageDiagonal = sqrt(CGFloat(renderedWidth * renderedWidth + renderedHeight * renderedHeight))
+  
+  // Circle radius: scale more conservatively for better visibility on all image sizes
+  // For 1000px images, this gives approximately 5-8px radius
+  let _radius = max(3.0, min(imageDiagonal * 0.008, 15.0))
 
   UIGraphicsBeginImageContextWithOptions(renderedSize, false, 0.0)
   guard let currentContext = UIGraphicsGetCurrentContext() else {
@@ -798,11 +805,12 @@ func drawOBBsOnCIImage(
   
   // Use a more conservative scaling for font size and line width
   let baseDimension = min(extent.width, extent.height)
-  let lineWidth = max(2.0, baseDimension * 0.006)
+  let lineWidth = max(2.0, baseDimension * 0.004)
   
-  // Scale font size more conservatively, especially for smaller images
-  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
-  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
+  // Scale font size more conservatively for better readability
+  // For 1000px images, this gives approximately 30-40px font size
+  let fontSizeScale = baseDimension < 1000 ? 0.03 : 0.04
+  let fontSize = max(20.0, min(baseDimension * fontSizeScale, 60.0))
   let outputSize = targetSize ?? CGSize(width: extent.width, height: extent.height)
 
   UIGraphicsBeginImageContextWithOptions(outputSize, false, 1.0)
@@ -889,15 +897,17 @@ public func drawYOLOPoseWithBoxes(
   // Use a more conservative scaling based on shorter dimension
   let baseDimension = min(width, height)
   
-  // Circle radius: scale between 2% and 4% of diagonal for better visibility
-  let circleRadius = max(8.0, min(imageDiagonal * 0.03, 40.0))
+  // Circle radius: scale more conservatively for better visibility on all image sizes
+  // For 1000px images, this gives approximately 5-8px radius
+  let circleRadius = max(3.0, min(imageDiagonal * 0.008, 15.0))
   
-  // Line width: 50% of circle radius for better visibility
-  let lineWidth = max(3.0, circleRadius * 0.5)
+  // Line width: 40% of circle radius for better proportions
+  let lineWidth = max(1.5, circleRadius * 0.4)
   
-  // Font size: scale more conservatively, especially for smaller images
-  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
-  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
+  // Font size: scale more conservatively for better readability
+  // For 1000px images, this gives approximately 30-40px font size
+  let fontSizeScale = baseDimension < 1000 ? 0.03 : 0.04
+  let fontSize = max(20.0, min(baseDimension * fontSizeScale, 60.0))
 
   // 3. Create a single rendering context
   UIGraphicsBeginImageContextWithOptions(renderedSize, false, 0.0)
@@ -1019,11 +1029,12 @@ public func drawYOLOSegmentationWithBoxes(
   
   // Use a more conservative scaling for font size and line width
   let baseDimension = min(width, height)
-  let lineWidth = max(2.0, baseDimension * 0.006)
+  let lineWidth = max(2.0, baseDimension * 0.004)
   
-  // Scale font size more conservatively, especially for smaller images
-  let fontSizeScale = baseDimension < 1500 ? 0.04 : 0.06
-  let fontSize = max(24.0, min(baseDimension * fontSizeScale, 80.0))
+  // Scale font size more conservatively for better readability
+  // For 1000px images, this gives approximately 30-40px font size
+  let fontSizeScale = baseDimension < 1000 ? 0.03 : 0.04
+  let fontSize = max(20.0, min(baseDimension * fontSizeScale, 60.0))
 
   // 3. Create a single rendering context
   UIGraphicsBeginImageContextWithOptions(renderedSize, false, 0.0)
