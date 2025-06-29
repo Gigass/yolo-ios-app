@@ -1473,6 +1473,7 @@ extension YOLOView {
   /// Enable screenshot mode with a selected image from photo library
   public func enableScreenshotMode(with image: UIImage) {
     isScreenshotMode = true
+    // Ensure the image has the correct orientation
     screenshotBackgroundImage = image
     
     // Stop video capture
@@ -1487,8 +1488,9 @@ extension YOLOView {
     // Create and add image view for background
     if screenshotImageView == nil {
       screenshotImageView = UIImageView()
-      screenshotImageView?.contentMode = .scaleAspectFill
+      screenshotImageView?.contentMode = .scaleAspectFit
       screenshotImageView?.clipsToBounds = true
+      screenshotImageView?.backgroundColor = .black
     }
     
     screenshotImageView?.image = image

@@ -1911,8 +1911,11 @@ extension ViewController {
     // Reset flag
     isScreenshotModeEnabled = false
     
+    // Fix image orientation before using it
+    let orientedImage = image.fixedOrientation()
+    
     // Enable screenshot mode in YOLOView
-    yoloView.enableScreenshotMode(with: image)
+    yoloView.enableScreenshotMode(with: orientedImage)
     
     // Update UI to show we're in screenshot mode
     statusMetricBar.updateMetrics(fps: 0, latency: 0)
