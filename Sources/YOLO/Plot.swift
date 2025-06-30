@@ -122,7 +122,7 @@ public func drawYOLODetections(on ciImage: CIImage, result: YOLOResult) -> UIIma
   // Use a more conservative scaling for font size and line width
   // Base the scaling on the shorter dimension to avoid over-scaling
   let baseDimension = min(CGFloat(width), CGFloat(height))
-  let lineWidth = max(2.0, baseDimension * 0.004)
+  let lineWidth = max(8.0, baseDimension * 0.012)
   
   // Scale font size more conservatively for better readability
   // For 1000px images, this gives approximately 30-40px font size
@@ -406,7 +406,7 @@ public func drawYOLOClassifications(on ciImage: CIImage, result: YOLOResult) -> 
   
   // Use a more conservative scaling for font size and line width
   let baseDimension = min(CGFloat(width), CGFloat(height))
-  let lineWidth = max(2.0, baseDimension * 0.004)
+  let lineWidth = max(8.0, baseDimension * 0.012)
   
   // Scale font size more conservatively for better readability
   // For 1000px images, this gives approximately 30-40px font size
@@ -805,7 +805,7 @@ func drawOBBsOnCIImage(
   
   // Use a more conservative scaling for font size and line width
   let baseDimension = min(extent.width, extent.height)
-  let lineWidth = max(2.0, baseDimension * 0.004)
+  let lineWidth = max(8.0, baseDimension * 0.012)
   
   // Scale font size more conservatively for better readability
   // For 1000px images, this gives approximately 30-40px font size
@@ -962,11 +962,9 @@ public func drawYOLOPoseWithBoxes(
       labelRect.origin.y = rect.minY
     }
 
-    // Round label background as well
-    let labelPath = UIBezierPath(roundedRect: labelRect, cornerRadius: cornerRadius)
+    // Draw label background (square corners)
     drawContext.setFillColor(color.cgColor)
-    drawContext.addPath(labelPath.cgPath)
-    drawContext.fillPath()
+    drawContext.fill(labelRect)
 
     // Draw text
     let textPoint = CGPoint(
@@ -1115,11 +1113,9 @@ public func drawYOLOSegmentationWithBoxes(
       labelRect.origin.y = rect.minY
     }
 
-    // Round label background as well
-    let labelPath = UIBezierPath(roundedRect: labelRect, cornerRadius: cornerRadius)
+    // Draw label background (square corners)
     drawContext.setFillColor(color.cgColor)
-    drawContext.addPath(labelPath.cgPath)
-    drawContext.fillPath()
+    drawContext.fill(labelRect)
 
     // Draw text
     let textPoint = CGPoint(
